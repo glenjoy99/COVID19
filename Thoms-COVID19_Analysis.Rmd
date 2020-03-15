@@ -7,17 +7,20 @@ output: html_document
 
 ```{r}
 library(tidyverse)
+currentPop <- 327000000
 corona <- read_csv("COVID-19-geographic-disbtribution-worldwide-2020-03-14_1.csv")
 corona <- corona %>%
   filter(CountryExp == "United States of America")
-corona
 corona$DateRep <- as.Date(corona$DateRep, format="%m/%d/%Y")
+corona <- corona %>%
+  arrange(DateRep)
 corona$DayOfWeek <- weekdays(corona$DateRep)
-corona$NewConfCases = corona$NewConfCases/1000
+corona$CumulativeSum = cumsum(corona$NewConfCases)
+corona$CumulativeSum = corona$CumulativeSum/currentPop
 
 #NOT A VALID ANALYSIS OF DATA
 corona %>%
-  ggplot(aes(x=DateRep, y=NewConfCases)) +
+  ggplot(aes(x=DateRep, y=CumulativeSum)) +
   ggtitle("NOT A VALID ANALYSIS OF COVID-19 DATA") + 
   stat_smooth(method="glm", se=FALSE, fullrange=TRUE, method.args=list(family=binomial)) + 
   geom_point(aes(color=DayOfWeek)) + xlim(as.Date("01/01/2020", format="%m/%d/%Y"), as.Date("06/01/2020", format="%m/%d/%Y") )
