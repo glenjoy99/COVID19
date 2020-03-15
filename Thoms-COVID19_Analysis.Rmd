@@ -1,0 +1,24 @@
+---
+title: "Thoms-COVID-19_Analysis"
+author: "Justin Thoms"
+date: "3/15/2020"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+corona <- read_csv("COVID-19-geographic-disbtribution-worldwide-2020-03-14_1.csv")
+corona <- corona %>%
+  filter(CountryExp == "United States of America")
+corona
+corona$DateRep <- as.Date(corona$DateRep, format="%m/%d/%Y")
+corona$DayOfWeek <- weekdays(corona$DateRep)
+corona$NewConfCases = corona$NewConfCases/1000
+
+#NOT A VALID ANALYSIS OF DATA
+corona %>%
+  ggplot(aes(x=DateRep, y=NewConfCases)) +
+  ggtitle("NOT A VALID ANALYSIS OF COVID-19 DATA") + 
+  stat_smooth(method="glm", se=FALSE, fullrange=TRUE, method.args=list(family=binomial)) + 
+  geom_point(aes(color=DayOfWeek)) + xlim(as.Date("01/01/2020", format="%m/%d/%Y"), as.Date("06/01/2020", format="%m/%d/%Y") )
+```
